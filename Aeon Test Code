@@ -1,4 +1,4 @@
-#pragma once
+=#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -52,3 +52,28 @@ protected:
 private:
     EAeonCharacterState PreviousState = EAeonCharacterState::Idle;
 };
+
+
+#include "StateMachineComponent.h"
+
+UStateMachineComponent::UStateMachineComponent()
+{
+    PrimaryComponentTick.bCanEverTick = false;
+}
+
+void UStateMachineComponent::BeginPlay()
+{
+    Super::BeginPlay();
+}
+
+void UStateMachineComponent::SetState(EAeonCharacterState NewState)
+{
+    if (NewState == CurrentState)
+        return;
+
+    EAeonCharacterState OldState = CurrentState;
+    PreviousState = CurrentState;
+    CurrentState = NewState;
+
+    OnStateChanged.Broadcast(OldState, NewState);
+}
