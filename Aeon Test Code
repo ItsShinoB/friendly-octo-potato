@@ -1,0 +1,54 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
+#include "StateMachineComponent.generated.h"
+
+UENUM(BlueprintType)
+enum class EAeonCharacterState : uint8
+{
+    Idle,
+    Walking,
+    Running,
+    Jumping,
+    Launching,
+    WallRunning,
+    WallHopping,
+    Attack1,
+    Attack2,
+    Attack3,
+    Dodging,
+    Staggered,
+    Falling,
+    Fallen,
+    Dead
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChanged, EAeonCharacterState, From, EAeonCharacterState, To);
+
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class AEON_API UStateMachineComponent : public UActorComponent
+{
+    GENERATED_BODY()
+
+public:
+    UStateMachineComponent();
+
+    UPROPERTY(BlueprintAssignable, Category="State")
+    FOnStateChanged OnStateChanged;
+
+    UPROPERTY(BlueprintReadOnly, Category="State")
+    EAeonCharacterState CurrentState = EAeonCharacterState::Idle;
+
+    UFUNCTION(BlueprintCallable, Category="State")
+    void SetState(EAeonCharacterState NewState);
+
+    UFUNCTION(BlueprintCallable, Category="State")
+    EAeonCharacterState GetState() const { return CurrentState; }
+
+protected:
+    virtual void BeginPlay() override;
+
+private:
+    EAeonCharacterState PreviousState = EAeonCharacterState::Idle;
+};
